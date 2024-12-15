@@ -2,22 +2,27 @@ import tweepy  # Used to post tweet
 
 import requests  # Used to call the NDV api
 
-from datetime import datetime
+from datetime import datetime, date
+
+
 
 import tweepy.client
 
-
-apiKey = "xYp6UXjI6rSpp9clBzGVbhWW8"
-
-privApiKey = "#cM9YPejKWB7cgId3T3Em4aA7nnPNWAmeQuDFCUSzkz0Ub3Hbrj"
-
-accToken = "1868131492800663552-r1kTDkvAGmV8hrzzp3qQvNg8CRK5Y6"
-
-privAccToken = "VpD10P8LQOFDEzNV0LstvXY6kr5Ak3jn9hgQIpWqxcO0f"
-
-bearer_token="AAAAAAAAAAAAAAAAAAAAABs3xgEAAAAAu6PGtsHB3IzVWgQiLHH3SlmKJI4%3DEj0KIQogFzL0fy1B9HZhm8RveIC9YJdovvU5oOSUqGtTCsBS7h"
-
 from datetime import datetime, timedelta, timezone
+
+API_KEY = "Wfgj9flomydRKj5bRK1mdTEJM"
+
+API_SECRET_KEY = "BOK2Unr0eaMy4uK2w0gdttGy8KTQZTyfnkUHVbHPL6UtbgljQQ"
+
+BEARER_TOKEN = "AAAAAAAAAAAAAAAAAAAAABs3xgEAAAAAkFlHfg8rzp42lVLnjWbMoLEqhS4%3D4qstQIDq54iy9zNhp81fhUXGL8VEEq5uTtORR1LoC3H03YzY3T"
+
+ACCESS_TOKEN = "1868131492800663552-DgkZDlrpWDSuNQWaNZlDr6Pc9e9pY3"
+
+ACCESS_SECRET_TOKEN = "H5tWMSyqergqN6Yxfe43XJRKBubGfEOwKEUTieU7cfelB"
+
+CLIENT_ID = "YWRMNVltX1ZnYUp0QXpyNmtWZGo6MTpjaQ"
+
+CLIENT_SECRET = "emRPQYrCa65umnTc9AOkmZfd0PirQ-W3GmOmV3D9m0yzKUO96F"
 
 
 # generate UTC start and end times
@@ -61,14 +66,28 @@ def filterOutputCVE(cveObj: dict) -> str:
         missing_message = f"{element} not present!"
         format.append(f"{element}: {cveObj.get(element,missing_message )}")
 
-    if cveObj.get("descriptions") is None:
-        format.append("Description: No description present!")
-    else:
-        msg = cveObj["descriptions"][0].get("value", "no description is present")
-        format.append(f"Description: {msg}")
+    metrics = next(iter(cveObj["metrics"]), None)
+    
+    if metrics is not None:
+      if len(metrics) >=2:
+          dataMetrics = cveObj['metrics'][metrics][0]["cvssData"]
+          format.append("Version: " + dataMetrics.get("version","N/A"))
+          format.append("BaseSeverity: " + dataMetrics.get("baseSeverity","N/A"))
+          format.append("baseScore: " + str(dataMetrics.get("baseScore","N/A")))
+          
+          
+    
+    
+    # if cveObj.get("descriptions") is None:
+    #     format.append("Description: No description present!")
+    # else:
+    #     msg = cveObj["descriptions"][0].get("value", "no description is present")
+    #     format.append(f"Description: {msg}")
+    
 
     return format
-
+    
+    
 
 def callAPI(format):
 
@@ -96,7 +115,7 @@ def getResults():
 
 
 def toStr(dict: dict, key):
-    str = f"{key}:" + "\n" + "\n"
+    str =  f"\n{key}:\n"
 
     val = dict.get(key)
 
@@ -108,11 +127,23 @@ def toStr(dict: dict, key):
 
 
 def tweet():
-
-
-    obj = getResults()
-    keys = ["Windows", "MacOs", "Linux"]
     
     
+    
+    api = tweepy.Client(bearer_token=BEARER_TOKEN,consumer_key=API_KEY,consumer_secret=API_SECRET_KEY,access_token=ACCESS_TOKEN,access_token_secret=ACCESS_SECRET_TOKEN)
+
+    data = getResults()
+    
+    os = ["Windows", "MacOs", "Linux"]
+    
+    str = f"Date:{date.today()}\n"
+    
+    for element in os:
+        api.create_tweet(text = str + toStr(data,element))
+       
+      
+tweet()
 
 
+#refractor code so when we output theres one cve per index, basically combine it into one object
+   
