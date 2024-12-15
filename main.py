@@ -58,9 +58,11 @@ def filterOutputCVE(cveObj: dict) -> str:
     if metrics is not None:
         if len(metrics) >= 2:
             dataMetrics = cveObj["metrics"][metrics][0]["cvssData"]
-            format.append("Version: " + dataMetrics.get("version", "N/A"))
             format.append("BaseSeverity: " + dataMetrics.get("baseSeverity", "N/A"))
             format.append("baseScore: " + str(dataMetrics.get("baseScore", "N/A")))
+            
+    if cveObj["references"] is not None:
+        format.append(cveObj["references"][0].get("url","N/A"))
 
     # if cveObj.get("descriptions") is None:
     #     format.append("Description: No description present!")
@@ -124,8 +126,9 @@ def tweet():
 
     str = f"Date:{date.today()}\n"
 
-    for element in os:
-        api.create_tweet(text=str + toStr(data, element))
+    print(toStr(data, "Windows"))
+    
+    api.create_tweet(text =toStr(data, "Windows") )
 
 
 tweet()
