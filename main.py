@@ -33,7 +33,7 @@ def getData(keyword):
                 "resultsPerPage": 20,
                 "keywordSearch": keyword,
             },
-            headers={"apiKey": "d15538a9-480e-44de-8290-8cffd6292863"},
+            headers={"apiKey": E.getenv("DATABASE_API_KEY")},
         )
         request.raise_for_status()
         return request.json()
