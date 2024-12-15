@@ -1,8 +1,8 @@
-import tweepy,tweepy.client  # Used to post tweet
+import tweepy, tweepy.client  # Used to post tweet
 
 import requests  # Used to call the NDV api
 
-from datetime import datetime, date,timedelta,timezone
+from datetime import datetime, date, timedelta, timezone
 
 from dotenv import load_dotenv
 
@@ -54,27 +54,22 @@ def filterOutputCVE(cveObj: dict) -> str:
         format.append(f"{element}: {cveObj.get(element,missing_message )}")
 
     metrics = next(iter(cveObj["metrics"]), None)
-    
+
     if metrics is not None:
-      if len(metrics) >=2:
-          dataMetrics = cveObj['metrics'][metrics][0]["cvssData"]
-          format.append("Version: " + dataMetrics.get("version","N/A"))
-          format.append("BaseSeverity: " + dataMetrics.get("baseSeverity","N/A"))
-          format.append("baseScore: " + str(dataMetrics.get("baseScore","N/A")))
-          
-          
-    
-    
+        if len(metrics) >= 2:
+            dataMetrics = cveObj["metrics"][metrics][0]["cvssData"]
+            format.append("Version: " + dataMetrics.get("version", "N/A"))
+            format.append("BaseSeverity: " + dataMetrics.get("baseSeverity", "N/A"))
+            format.append("baseScore: " + str(dataMetrics.get("baseScore", "N/A")))
+
     # if cveObj.get("descriptions") is None:
     #     format.append("Description: No description present!")
     # else:
     #     msg = cveObj["descriptions"][0].get("value", "no description is present")
     #     format.append(f"Description: {msg}")
-    
 
     return format
-    
-    
+
 
 def callAPI(format):
 
@@ -97,12 +92,12 @@ def getResults():
     filteredData = {}
     for e in os:
         filteredData[e] = callAPI(e)
-        
+
     return filteredData
 
 
 def toStr(dict: dict, key):
-    str =  f"\n{key}:\n"
+    str = f"\n{key}:\n"
 
     val = dict.get(key)
 
@@ -114,23 +109,26 @@ def toStr(dict: dict, key):
 
 
 def tweet():
-    
-    
-    
-    api = tweepy.Client(bearer_token= E.getenv("BEARER_TOKEN"),consumer_key= E.getenv("API_KEY"),consumer_secret= E.getenv("API_SECRET_KEY"),access_token=E.getenv("ACCESS_TOKEN"),access_token_secret=E.getenv("ACCESS_SECRET_TOKEN"))
+
+    api = tweepy.Client(
+        bearer_token=E.getenv("BEARER_TOKEN"),
+        consumer_key=E.getenv("API_KEY"),
+        consumer_secret=E.getenv("API_SECRET_KEY"),
+        access_token=E.getenv("ACCESS_TOKEN"),
+        access_token_secret=E.getenv("ACCESS_SECRET_TOKEN"),
+    )
 
     data = getResults()
-    
+
     os = ["Windows", "MacOs", "Linux"]
-    
+
     str = f"Date:{date.today()}\n"
-    
+
     for element in os:
-        api.create_tweet(text = str + toStr(data,element))
-       
-      
+        api.create_tweet(text=str + toStr(data, element))
+
+
 tweet()
 
 
-#refractor code so when we output theres one cve per index, basically combine it into one object
-   
+# refractor code so when we output theres one cve per index, basically combine it into one object
