@@ -1,28 +1,15 @@
-import tweepy  # Used to post tweet
+import tweepy,tweepy.client  # Used to post tweet
 
 import requests  # Used to call the NDV api
 
-from datetime import datetime, date
+from datetime import datetime, date,timedelta,timezone
 
+from dotenv import load_dotenv
 
+import os as E
 
-import tweepy.client
-
-from datetime import datetime, timedelta, timezone
-
-API_KEY = "Wfgj9flomydRKj5bRK1mdTEJM"
-
-API_SECRET_KEY = "BOK2Unr0eaMy4uK2w0gdttGy8KTQZTyfnkUHVbHPL6UtbgljQQ"
-
-BEARER_TOKEN = "AAAAAAAAAAAAAAAAAAAAABs3xgEAAAAAkFlHfg8rzp42lVLnjWbMoLEqhS4%3D4qstQIDq54iy9zNhp81fhUXGL8VEEq5uTtORR1LoC3H03YzY3T"
-
-ACCESS_TOKEN = "1868131492800663552-DgkZDlrpWDSuNQWaNZlDr6Pc9e9pY3"
-
-ACCESS_SECRET_TOKEN = "H5tWMSyqergqN6Yxfe43XJRKBubGfEOwKEUTieU7cfelB"
-
-CLIENT_ID = "YWRMNVltX1ZnYUp0QXpyNmtWZGo6MTpjaQ"
-
-CLIENT_SECRET = "emRPQYrCa65umnTc9AOkmZfd0PirQ-W3GmOmV3D9m0yzKUO96F"
+# Load the .env file
+load_dotenv()
 
 
 # generate UTC start and end times
@@ -130,7 +117,7 @@ def tweet():
     
     
     
-    api = tweepy.Client(bearer_token=BEARER_TOKEN,consumer_key=API_KEY,consumer_secret=API_SECRET_KEY,access_token=ACCESS_TOKEN,access_token_secret=ACCESS_SECRET_TOKEN)
+    api = tweepy.Client(bearer_token= E.getenv("BEARER_TOKEN"),consumer_key= E.getenv("API_KEY"),consumer_secret= E.getenv("API_SECRET_KEY"),access_token=E.getenv("ACCESS_TOKEN"),access_token_secret=E.getenv("ACCESS_SECRET_TOKEN"))
 
     data = getResults()
     
