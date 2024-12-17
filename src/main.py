@@ -1,4 +1,6 @@
-import tweepy, tweepy.client  # Used to post tweet
+import tweepy, tweepy.client 
+
+import seaborn # Used to post tweet
 
 import requests  # Used to call the NDV api
 
@@ -13,7 +15,7 @@ load_dotenv()
 
 
 # generate UTC start and end times
-def getDate(day=3):
+def getDate(day=7):
     return [
         (datetime.now(timezone.utc) - timedelta(days=day)).strftime(
             "%Y-%m-%dT%H:%M:%SZ"
@@ -126,12 +128,12 @@ def tweet():
 
     str = f"Date:{date.today()}\n"
 
-    print(toStr(data, "Windows"))
+    print(toStr(data, "MacOs"))
     
-    api.create_tweet(text =toStr(data, "Windows") )
+    # api.create_tweet(text =toStr(data, "Linux") )
 
 
 tweet()
 
 
-# refractor code so when we output theres one cve per index, basically combine it into one object
+# refractor code so when we output theres one cve per index, basically combine it into one object. Add code to not post if theres no new vulnerabilities 
