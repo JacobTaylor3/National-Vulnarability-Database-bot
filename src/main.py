@@ -1,6 +1,7 @@
-import tweepy, tweepy.client 
+import tweepy
+import tweepy.client
 
-import seaborn # Used to post tweet
+# Used to post tweet
 
 import requests  # Used to call the NDV api
 
@@ -46,7 +47,6 @@ def getData(keyword):
 
 # assuming vulnarabilites is not 0!
 def filterOutputCVE(cveObj: dict) -> str:
-
     data = ["id", "sourceIdentifier", "published", "vulnStatus"]
 
     format = []
@@ -62,9 +62,9 @@ def filterOutputCVE(cveObj: dict) -> str:
             dataMetrics = cveObj["metrics"][metrics][0]["cvssData"]
             format.append("BaseSeverity: " + dataMetrics.get("baseSeverity", "N/A"))
             format.append("baseScore: " + str(dataMetrics.get("baseScore", "N/A")))
-            
+
     if cveObj["references"] is not None:
-        format.append(cveObj["references"][0].get("url","N/A"))
+        format.append(cveObj["references"][0].get("url", "N/A"))
 
     # if cveObj.get("descriptions") is None:
     #     format.append("Description: No description present!")
@@ -76,7 +76,6 @@ def filterOutputCVE(cveObj: dict) -> str:
 
 
 def callAPI(format):
-
     data = getData(format)
     filterOutput = []
     if len(data["vulnerabilities"]) == 0:
@@ -84,14 +83,12 @@ def callAPI(format):
         return filterOutput
 
     for element in data["vulnerabilities"]:
-
         filterOutput.append(filterOutputCVE(element.get("cve")))
 
     return filterOutput
 
 
 def getResults():
-
     os = ["Windows", "MacOs", "Linux"]
     filteredData = {}
     for e in os:
@@ -113,7 +110,6 @@ def toStr(dict: dict, key):
 
 
 def tweet():
-
     api = tweepy.Client(
         bearer_token=E.getenv("BEARER_TOKEN"),
         consumer_key=E.getenv("API_KEY"),
@@ -126,14 +122,14 @@ def tweet():
 
     os = ["Windows", "MacOs", "Linux"]
 
-    str = f"Date:{date.today()}\n"
+    f"Date:{date.today()}\n"
 
     print(toStr(data, "MacOs"))
-    
+
     # api.create_tweet(text =toStr(data, "Linux") )
 
 
 tweet()
 
 
-# refractor code so when we output theres one cve per index, basically combine it into one object. Add code to not post if theres no new vulnerabilities 
+# refractor code so when we output theres one cve per index, basically combine it into one object. Add code to not post if theres no new vulnerabilities
