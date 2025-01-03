@@ -46,85 +46,46 @@ def getData(keyword):
 
 
 # assuming vulnarabilites is not 0! HAVE THIS RETURN AN OBJECT(DICT)
-def filterOutputCVE(cveObj: dict) -> str:
+def getVulnObj(cveObj: dict) -> str:
     data = ["id", "sourceIdentifier", "published", "vulnStatus"]
 
-    format = []
+    vulObj = {}
 
     for element in data:
-        missing_message = f"{element} not present!"
-        format.append(f"{element}: {cveObj.get(element,missing_message )}")
-
+        vulObj[element] = cveObj.get(element,"N/A")
+       
     metrics = next(iter(cveObj["metrics"]), None)
 
     if metrics is not None:
         if len(metrics) >= 2:
             dataMetrics = cveObj["metrics"][metrics][0]["cvssData"]
-            format.append("BaseSeverity: " + dataMetrics.get("baseSeverity", "N/A"))
-            format.append("baseScore: " + str(dataMetrics.get("baseScore", "N/A")))
+            vulObj["BaseSeverity"] = dataMetrics.get("baseSeverity", "N/A")
+            vulObj["BaseScore"] = dataMetrics.get("baseScore", "N/A")
 
     if cveObj["references"] is not None:
-        format.append(cveObj["references"][0].get("url", "N/A"))
+        vulObj["url"] = cveObj["references"][0].get("url", "N/A")
 
   
-    return format
+    return vulObj
 
 
 def callAPI(format):
     data = getData(format)
-    filterOutput = []
-    if len(data["vulnerabilities"]) == 0:
-        filterOutput.append([f"{format} has no known vulnerabilities"])
-        return filterOutput
-
+    arrOfVuln = []
+    if len(data["vulnerabilities"]) == 0: # no new vulnarabilites
+        return arrOfVuln
+        
     for element in data["vulnerabilities"]:
-        filterOutput.append(filterOutputCVE(element.get("cve")))
+        arrOfVuln.append(getVulnObj(element.get("cve")))
 
-    return filterOutput
-
-
-def getResults():
-    os = ["Windows", "MacOs", "Linux"]
-    filteredData = {}
-    for e in os:
-        filteredData[e] = callAPI(e)
-
-    return filteredData
+    return arrOfVuln
 
 
-def toStr(dict: dict, key):
-    str = f"\n{key}:\n"
-
-    val = dict.get(key)
-
-    for e in val:
-        for inner in e:
-            str = str + inner + "\n"
-
-    return str
 
 
-def tweet():
-    # api = tweepy.Client(
-    #     bearer_token=E.getenv("BEARER_TOKEN"),
-    #     consumer_key=E.getenv("API_KEY"),
-    #     consumer_secret=E.getenv("API_SECRET_KEY"),
-    #     access_token=E.getenv("ACCESS_TOKEN"),
-    #     access_token_secret=E.getenv("ACCESS_SECRET_TOKEN"),
-    # )
-
-    data = getResults()
-
-    os = ["Windows", "MacOs", "Linux"]
-
-    f"Date:{date.today()}\n"
-
-    print(toStr(data, "Windows"))
-
-    # api.create_tweet(text =toStr(data, "Linux") )
 
 
-tweet()
+print(callAPI("Windows"))
 
 
 # refractor code so when we output theres one cve per index, basically combine it into one object. Add code to not post if theres no new vulnerabilities
