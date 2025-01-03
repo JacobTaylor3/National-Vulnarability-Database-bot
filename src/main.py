@@ -24,7 +24,7 @@ def getDate(day=7):
         datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
     ]
 
-
+#Returns json data 
 def getData(keyword):
     formatted_start_date, formatted_end_date = getDate()
     try:
@@ -45,7 +45,7 @@ def getData(keyword):
         print(f"An error occurred:{error}")
 
 
-# assuming vulnarabilites is not 0!
+# assuming vulnarabilites is not 0! HAVE THIS RETURN AN OBJECT(DICT)
 def filterOutputCVE(cveObj: dict) -> str:
     data = ["id", "sourceIdentifier", "published", "vulnStatus"]
 
@@ -66,12 +66,7 @@ def filterOutputCVE(cveObj: dict) -> str:
     if cveObj["references"] is not None:
         format.append(cveObj["references"][0].get("url", "N/A"))
 
-    # if cveObj.get("descriptions") is None:
-    #     format.append("Description: No description present!")
-    # else:
-    #     msg = cveObj["descriptions"][0].get("value", "no description is present")
-    #     format.append(f"Description: {msg}")
-
+  
     return format
 
 
@@ -110,13 +105,13 @@ def toStr(dict: dict, key):
 
 
 def tweet():
-    api = tweepy.Client(
-        bearer_token=E.getenv("BEARER_TOKEN"),
-        consumer_key=E.getenv("API_KEY"),
-        consumer_secret=E.getenv("API_SECRET_KEY"),
-        access_token=E.getenv("ACCESS_TOKEN"),
-        access_token_secret=E.getenv("ACCESS_SECRET_TOKEN"),
-    )
+    # api = tweepy.Client(
+    #     bearer_token=E.getenv("BEARER_TOKEN"),
+    #     consumer_key=E.getenv("API_KEY"),
+    #     consumer_secret=E.getenv("API_SECRET_KEY"),
+    #     access_token=E.getenv("ACCESS_TOKEN"),
+    #     access_token_secret=E.getenv("ACCESS_SECRET_TOKEN"),
+    # )
 
     data = getResults()
 
@@ -124,7 +119,7 @@ def tweet():
 
     f"Date:{date.today()}\n"
 
-    print(toStr(data, "MacOs"))
+    print(toStr(data, "Windows"))
 
     # api.create_tweet(text =toStr(data, "Linux") )
 
