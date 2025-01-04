@@ -2,7 +2,7 @@ import tweepy
 import tweepy.client
 
 
-import requests 
+import requests
 
 from datetime import datetime, timedelta, timezone
 
@@ -13,6 +13,8 @@ import os as E
 import random
 
 import time
+
+import sys
 
 
 # Load the .env file
@@ -83,6 +85,7 @@ def getData():
 
     return arrOfVuln
 
+
 def format_iso_to_mmddyyyy(iso_date_str):
     """
     Converts an ISO 8601 date string (e.g. 2025-01-03T09:15:05.983)
@@ -90,7 +93,7 @@ def format_iso_to_mmddyyyy(iso_date_str):
     """
     # If you're on Python 3.7+, fromisoformat can parse fractional seconds automatically
     dt = datetime.fromisoformat(iso_date_str)
-    
+
     # %m = 2-digit month
     # %d = 2-digit day
     # %Y = 4-digit year
@@ -103,29 +106,35 @@ def format_iso_to_mmddyyyy(iso_date_str):
 
 def remove_unwanted_chars(s):
     # Characters we want to remove:
-    chars_to_remove = ["{", "}", "'",]
+    chars_to_remove = [
+        "{",
+        "}",
+        "'",
+    ]
 
     for ch in chars_to_remove:
         s = s.replace(ch, "")
     return s
 
+
 def changeDateFormat(arr):
     copyArr = list(arr)
     for element in copyArr:
         date = element.get("published")  # noqa: F811
-        
+
         if date:
             element["published"] = format_iso_to_mmddyyyy(date)
-            
+
     return copyArr
+
 
 def dict_to_multiline_string(my_dict):
     lines = []
     for key, value in my_dict.items():
         lines.append(f"{key}: {value}")
     return "\n".join(lines)
-            
-    
+
+
 def tweet():
     api = tweepy.Client(
         bearer_token=E.getenv("BEARER_TOKEN"),
@@ -144,14 +153,17 @@ def tweet():
         randomIdx = random.randint(0, len(data) - 1)
         tweet = remove_unwanted_chars(dict_to_multiline_string(data[randomIdx]))
         link = data[randomIdx]["url"]
-        
+
         if tweet in setOfTweets or link in setOfLinks:
             setOfTweets.add(tweet)
             setOfLinks.add(link)
             continue
+        try:
+            api.create_tweet(text=tweet)
 
-        api.create_tweet(text=tweet)
-        
+        except tweepy.TweepyException:
+            sys.exit(1)
+
         setOfTweets.add(tweet)
         setOfLinks.add(link)
 
@@ -160,5 +172,3 @@ def tweet():
 
 if __name__ == "__main__":
     tweet()
-    
-    
