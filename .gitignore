@@ -3,22 +3,27 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# Virtual environment
+# C extensions
+*.so
+
+# Virtual Environment
 venv/
 ENV/
-.env/
+env/
 .venv/
+.env/
 
 # Packages
 package/
 *.egg-info/
 dist/
 build/
+*.whl
 
-# Deployment packages
+# Deployment Package
 lambda_package.zip
 
-# VS Code settings
+# VS Code settings (optional)
 .vscode/
 
 # Logs
@@ -28,4 +33,78 @@ lambda_package.zip
 .DS_Store
 Thumbs.db
 
+# Python-specific temporary files
+*.tmp
+*.temp
+
+# Jupyter Notebook checkpoints (if applicable)
+.ipynb_checkpoints/
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# IDEs and editors
+# JetBrains
+.idea/
+# Spyder project settings
+.spyderproject
+.spyproject
+# Rope project settings
+.ropeproject
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# AWS SAM build artifacts (if using AWS SAM)
+.aws-sam/
+
+# Serverless framework artifacts (if using Serverless Framework)
+.serverless/
+
+# Mac system files
+.DS_Store
+
+# Windows system files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
 # Other unwanted files
+*.bak
+*.swp
+*~
