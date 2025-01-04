@@ -1,7 +1,6 @@
 import tweepy
 import tweepy.client
 
-
 import requests
 
 from datetime import datetime, timedelta, timezone
