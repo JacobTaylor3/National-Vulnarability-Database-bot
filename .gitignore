@@ -1,1 +1,31 @@
-.env
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+ENV/
+.env/
+.venv/
+
+# Packages
+package/
+*.egg-info/
+dist/
+build/
+
+# Deployment packages
+lambda_package.zip
+
+# VS Code settings
+.vscode/
+
+# Logs
+*.log
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Other unwanted files
