@@ -11,7 +11,7 @@ venv/
 ENV/
 env/
 .venv/
-.env
+.env/
 
 # Packages
 package/
