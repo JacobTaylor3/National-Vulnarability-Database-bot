@@ -159,6 +159,7 @@ def tweet():
             continue
         try:
             api.create_tweet(text=tweet)
+            print("Tweeted!: ", tweet)
 
         except tweepy.TweepyException:
             sys.exit(1)
@@ -169,5 +170,3 @@ def tweet():
         time.sleep(120)
 
 
-if __name__ == "__main__":
-    tweet()
