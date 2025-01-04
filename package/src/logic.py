@@ -13,8 +13,6 @@ import random
 
 import time
 
-import sys
-
 
 # Load the .env file
 load_dotenv()
@@ -161,12 +159,12 @@ def tweet():
             api.create_tweet(text=tweet)
             print("Tweeted!: ", tweet)
 
-        except tweepy.TweepyException:
-            sys.exit(1)
+        except tweepy.TweepyException as e:
+            print(e)
+            break
 
         setOfTweets.add(tweet)
         setOfLinks.add(link)
 
         time.sleep(120)
-
-
+        
