@@ -188,7 +188,8 @@ def tweet():
         setOfLinks.add(link)
         try:
             print(f"{tweet}")
-            # api.create_tweet(text=tweet)
+            api.create_tweet(text=tweet)
+            print("Success!")
 
         except tweepy.errors.TooManyRequests as e:
             print(e.response)
@@ -198,5 +199,3 @@ def tweet():
         except tweepy.errors.Forbidden:
             continue
 
-
-tweet()
