@@ -11,7 +11,7 @@ import os as E
 
 import random
 
-import time
+import tweepy.errors
 
 
 # Load the .env file
@@ -50,7 +50,7 @@ def callApi():
 
 # assuming vulnerabilities is not 0! HAVE THIS RETURN AN OBJECT(DICT)
 def getVulnObj(cveObj: dict) -> str:
-    data = ["id", "sourceIdentifier", "published", "vulnStatus"]
+    data = ["id", "published"]
 
     vulObj = {}
 
@@ -62,11 +62,13 @@ def getVulnObj(cveObj: dict) -> str:
     if metrics is not None:
         if len(metrics) >= 2:
             dataMetrics = cveObj["metrics"][metrics][0]["cvssData"]
-            vulObj["BaseSeverity"] = dataMetrics.get("baseSeverity", "N/A")
-            vulObj["BaseScore"] = dataMetrics.get("baseScore", "N/A")
+            vulObj["BaseSeverity"] = dataMetrics.get("baseSeverity", "")
 
     if cveObj["references"] is not None:
-        vulObj["url"] = cveObj["references"][0].get("url", "N/A")
+        vulObj["url"] = cveObj["references"][0].get("url", "")
+
+    if cveObj["descriptions"] is not None:
+        vulObj["description"] = cveObj["descriptions"][0].get("value", "")
 
     return vulObj
 
@@ -101,17 +103,17 @@ def format_iso_to_mmddyyyy(iso_date_str):
     return dt.strftime("%m/%d/%Y %I:%M:%S %p")
 
 
-def remove_unwanted_chars(s):
-    # Characters we want to remove:
-    chars_to_remove = [
-        "{",
-        "}",
-        "'",
-    ]
+# def remove_unwanted_chars(s):
+#     # Characters we want to remove:
+#     chars_to_remove = [
+#         "{",
+#         "}",
+#         "'",
+#     ]
 
-    for ch in chars_to_remove:
-        s = s.replace(ch, "")
-    return s
+#     for ch in chars_to_remove:
+#         s = s.replace(ch, "")
+#     return s
 
 
 def changeDateFormat(arr):
@@ -127,9 +129,37 @@ def changeDateFormat(arr):
 
 def dict_to_multiline_string(my_dict):
     lines = []
+
     for key, value in my_dict.items():
-        lines.append(f"{key}: {value}")
+        if key == "description" or key == "id" or key == "published":
+            lines.append(f"{value}")
+
+        if key == "BaseSeverity":
+            lines.append(f"{key}: {value}")
+        
+    lines.append(my_dict["url"])
+
     return "\n".join(lines)
+
+
+def createTweet(dict, index):
+    noUrlTweet = dict_to_multiline_string(dict[index])
+
+    charLength = len(noUrlTweet)
+
+    CHARLIMIT = 280
+
+    if charLength <= CHARLIMIT:
+        return noUrlTweet
+
+    else:
+        diff = charLength  - 280
+
+        description = dict[index]["description"]
+
+        dict[index]["description"] = description[: -diff - 3] + "..."
+
+        return dict_to_multiline_string(dict[index])
 
 
 def tweet():
@@ -148,23 +178,24 @@ def tweet():
 
     for _i in range(0, 5):
         randomIdx = random.randint(0, len(data) - 1)
-        tweet = remove_unwanted_chars(dict_to_multiline_string(data[randomIdx]))
+        tweet = createTweet(data, randomIdx)
+
         link = data[randomIdx]["url"]
 
         if tweet in setOfTweets or link in setOfLinks:
-            setOfTweets.add(tweet)
-            setOfLinks.add(link)
             continue
-        try:
-            api.create_tweet(text=tweet)
-            print("Tweeted!: ", tweet)
-
-        except tweepy.TweepyException as e:
-            print(e)
-            break
-
         setOfTweets.add(tweet)
         setOfLinks.add(link)
+        try:
+            print(f"{tweet}")
+            api.create_tweet(text=tweet)
+            print("Success!")
 
-        time.sleep(120)
-        
+        except tweepy.errors.TooManyRequests as e:
+            print(e.response)
+            print(e.api_messages)
+            raise e
+
+        except tweepy.errors.Forbidden:
+            continue
+
