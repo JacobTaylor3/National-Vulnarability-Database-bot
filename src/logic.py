@@ -131,13 +131,13 @@ def dict_to_multiline_string(my_dict):
     lines = []
 
     for key, value in my_dict.items():
-        if key == "url":
-            continue
         if key == "description" or key == "id" or key == "published":
             lines.append(f"{value}")
 
         if key == "BaseSeverity":
             lines.append(f"{key}: {value}")
+        
+    lines.append(my_dict["url"])
 
     return "\n".join(lines)
 
@@ -149,17 +149,17 @@ def createTweet(dict, index):
 
     CHARLIMIT = 280
 
-    if (charLength + 23) <= CHARLIMIT:
-        return noUrlTweet + "\n" + dict[index]["url"]
+    if charLength <= CHARLIMIT:
+        return noUrlTweet
 
     else:
-        diff = (charLength + 23) - 280
+        diff = charLength  - 280
 
         description = dict[index]["description"]
 
         dict[index]["description"] = description[: -diff - 3] + "..."
 
-        return dict_to_multiline_string(dict[index]) + "\n" + dict[index]["url"]
+        return dict_to_multiline_string(dict[index])
 
 
 def tweet():
@@ -176,7 +176,7 @@ def tweet():
     setOfTweets = set()
     setOfLinks = set()
 
-    for _i in range(0, 2):
+    for _i in range(0, 5):
         randomIdx = random.randint(0, len(data) - 1)
         tweet = createTweet(data, randomIdx)
 
@@ -187,9 +187,8 @@ def tweet():
         setOfTweets.add(tweet)
         setOfLinks.add(link)
         try:
-            print(f"Tweet:{tweet}")
-            api.create_tweet(text=tweet)
-            print("Success!")
+            print(f"{tweet}")
+            # api.create_tweet(text=tweet)
 
         except tweepy.errors.TooManyRequests as e:
             print(e.response)
